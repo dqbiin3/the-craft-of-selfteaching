@@ -1,3 +1,158 @@
+## 广告快捷支付方法
+
+### 配置：
+
+```java
+compileSdkVersion 29
+minSdkVersion 15
+targetSdkVersion 28
+```
+
+
+
+### 1、拷贝资源
+
+将libs下的资源拷贝到对应工程的libs下
+
+### 2、build.gradle配置
+
+```java
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+```
+
+```java
+    /*rxGame*/
+    implementation(name: 'rxGame-XXX', ext: 'aar')
+    implementation(name: 'open_ad_sdk', ext: 'aar')
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation(name: 'GDTSDK.tbsNormal.4.100.970', ext: 'aar')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    /*rxGame*/
+```
+
+### 3、AndroidManifest.xml配置
+
+```java
+        <activity
+            android:name="com.ls.rxgame.Manager.SplashActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="GAME_LAUNCH_ACTIVITY"
+                android:value="com.XXX.MainActivity" />
+        </activity>
+```
+
+注意：【其中meta-data的value为开屏广告结束后即将跳转的游戏主Activity】
+
+​			【开屏记得配置显示竖屏】
+
+### 4、Application配置
+
+```java
+rXmanager.initApplication(this);
+```
+
+### 5、Activity初始化
+
+```java
+		/**
+		 *callback:[rXGameCallBack.rxAdCallback]回调函数
+		 */
+```
+
+```java
+rXmanager.initRxADAction(this,callback);
+注意：Activity初始化需要在游戏主Activity中调用
+```
+
+### 6、广告调取
+
+#### 1、rXmanager.actionAdRewardStart拉起广告，回调isProps为success下发道具
+
+```
+/**
+ * adID：调取位置的值，入没有则填0即可
+ * rXGameCallBack.rxAdCallback ：回调函数
+ */
+```
+
+```java
+rXmanager.actionAdRewardStart(adID,AppActivity.callback);
+```
+
+```java
+    public static rXGameCallBack.rxAdCallback callback = new rXGameCallBack.rxAdCallback() {
+        @Override
+        public void getProps(String isProps, int adIDCallback) {
+            if (isProps.equals("success") && adIDCallback > 0) {
+                MyLog.e("007", "发放道具");
+
+            }
+        }
+    };
+```
+
+#### 2、rXmanager.actionFullAndInsert拉起广告
+
+该接口不会发放道具，主要用于比如每一局结束了需要自动调用广告所需
+
+```java
+/**
+ * adID：调取位置的值，入没有则填0即可
+ * rXGameCallBack.rxAdCallback ：回调函数
+ * showNumData：设置每一局调取插屏和全屏视频间隔调取次数
+ */
+```
+
+```java
+rXmanager.actionFullAndInsert(adID,AppActivity.callback);
+```
+
+## 友盟添加
+
+### 1、build.gradle配置
+
+```java
+    // 友盟统计SDK
+    implementation files('libs/umeng-common-9.1.3.jar')
+    implementation(name: 'umeng-asms-armeabi-v1.1.3', ext: 'aar')
+    implementation(name: 'umeng-crash-armeabi-v0.0.5', ext: 'aar')
+    /*友盟*/
+```
+
+### 2、Activity中配置
+
+```java
+//        友盟
+UMConfigure.init(this, ConstData.YOUMENG_KEY, ConstData.CHANNELID, UMConfigure.DEVICE_TYPE_PHONE,null);
+```
+
+```java
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+```
+
+
+
 # the-craft-of-selfteaching
 
 > One has no future if he couldn't teach himself.
